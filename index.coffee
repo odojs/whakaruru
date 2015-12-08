@@ -25,4 +25,5 @@ module.exports = (cb) ->
         child.process.kill()
   process.on 'SIGTERM', ->
     for id in cluster.workers
+      toma[worker.id] = yes
       cluster.workers[id].process.kill()

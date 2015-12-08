@@ -39,6 +39,7 @@ module.exports = function(cb) {
     results = [];
     for (i = 0, len = ref.length; i < len; i++) {
       id = ref[i];
+      toma[worker.id] = true;
       results.push(cluster.workers[id].process.kill());
     }
     return results;
