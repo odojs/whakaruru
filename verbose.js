@@ -9,14 +9,23 @@ module.exports = function(cb) {
     return cb();
   }
   toma = {};
+  console.log(process.pid + " Tētē kura");
   cluster.on('exit', function(worker) {
     if (toma[worker.id.toString()] == null) {
+      console.log(worker.process.pid + ":" + (worker.id.toString()) + " Whakamātūtū");
       return cluster.fork();
+    } else {
+      return console.log(worker.process.pid + ":" + (worker.id.toString()) + " Mōnehu");
     }
+  });
+  cluster.on('listening', function(worker, address) {
+    var ref;
+    return console.log(worker.process.pid + ":" + (worker.id.toString()) + " Whakarongo " + ((ref = address.address) != null ? ref : '0.0.0.0') + ":" + address.port);
   });
   cluster.fork();
   process.on('SIGHUP', function() {
     var worker;
+    console.log(process.pid + " Pūangiangi");
     worker = cluster.fork();
     return worker.once('listening', function(address) {
       var child, id, ref, results;
@@ -27,6 +36,7 @@ module.exports = function(cb) {
         if (id === worker.id.toString()) {
           continue;
         }
+        console.log(child.process.pid + ":" + (id.toString()) + " Harapaki");
         toma[id.toString()] = true;
         results.push(child.process.kill());
       }
@@ -34,15 +44,14 @@ module.exports = function(cb) {
     });
   });
   shutdown = function() {
-    var child, id, ref, results;
+    var child, id, ref;
     ref = cluster.workers;
-    results = [];
     for (id in ref) {
       child = ref[id];
       toma[id.toString()] = true;
-      results.push(child.process.kill());
+      child.process.kill();
     }
-    return results;
+    return console.log(process.pid + " Tētē kura manawa kiore");
   };
   process.on('SIGINT', shutdown);
   return process.on('SIGTERM', shutdown);
