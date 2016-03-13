@@ -6,8 +6,8 @@ module.exports = (cb) ->
   toma = {}
   #console.log "#{process.pid} Tētē kura"
   cluster.on 'exit', (worker) ->
-    if !toma[worker.id.toString()]?
-      cluster.fork()
+    cluster.fork() if !toma[worker.id.toString()]?
+    process.exit() if Object.keys(cluster.workers).length is 0
   cluster.fork()
   process.on 'SIGHUP', ->
     worker = cluster.fork()

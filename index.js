@@ -11,7 +11,10 @@ module.exports = function(cb) {
   toma = {};
   cluster.on('exit', function(worker) {
     if (toma[worker.id.toString()] == null) {
-      return cluster.fork();
+      cluster.fork();
+    }
+    if (Object.keys(cluster.workers).length === 0) {
+      return process.exit();
     }
   });
   cluster.fork();

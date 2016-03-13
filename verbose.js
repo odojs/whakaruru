@@ -13,9 +13,12 @@ module.exports = function(cb) {
   cluster.on('exit', function(worker) {
     if (toma[worker.id.toString()] == null) {
       console.log(worker.process.pid + ":" + (worker.id.toString()) + " Whakamātūtū");
-      return cluster.fork();
+      cluster.fork();
     } else {
-      return console.log(worker.process.pid + ":" + (worker.id.toString()) + " Mōnehu");
+      console.log(worker.process.pid + ":" + (worker.id.toString()) + " Mōnehu");
+    }
+    if (Object.keys(cluster.workers).length === 0) {
+      return process.exit();
     }
   });
   cluster.on('listening', function(worker, address) {
@@ -33,7 +36,7 @@ module.exports = function(cb) {
       results = [];
       for (id in ref) {
         child = ref[id];
-        if (id === worker.id.toString()) {
+        if (id.toString() === worker.id.toString()) {
           continue;
         }
         console.log(child.process.pid + ":" + (id.toString()) + " Harapaki");
@@ -53,6 +56,12 @@ module.exports = function(cb) {
     }
     return console.log(process.pid + " Tētē kura manawa kiore");
   };
-  process.on('SIGINT', shutdown);
-  return process.on('SIGTERM', shutdown);
+  process.on('SIGINT', function() {
+    console.log(process.pid + " SIGINT");
+    return shutdown();
+  });
+  return process.on('SIGTERM', function() {
+    console.log(process.pid + " SIGTERM");
+    return shutdown();
+  });
 };

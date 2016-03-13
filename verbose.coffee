@@ -11,6 +11,7 @@ module.exports = (cb) ->
       cluster.fork()
     else
       console.log "#{worker.process.pid}:#{worker.id.toString()} Mōnehu"
+    process.exit() if Object.keys(cluster.workers).length is 0
   cluster.on 'listening', (worker, address) ->
     console.log "#{worker.process.pid}:#{worker.id.toString()} Whakarongo #{address.address ? '0.0.0.0'}:#{address.port}"
   cluster.fork()
@@ -19,7 +20,7 @@ module.exports = (cb) ->
     worker = cluster.fork()
     worker.once 'listening', (address) ->
       for id, child of cluster.workers
-        continue if id == worker.id.toString()
+        continue if id.toString() is worker.id.toString()
         console.log "#{child.process.pid}:#{id.toString()} Harapaki"
         toma[id.toString()] = yes
         child.process.kill()
@@ -28,5 +29,9 @@ module.exports = (cb) ->
       toma[id.toString()] = yes
       child.process.kill()
     console.log "#{process.pid} Tētē kura manawa kiore"
-  process.on 'SIGINT', shutdown
-  process.on 'SIGTERM', shutdown
+  process.on 'SIGINT', ->
+    console.log "#{process.pid} SIGINT"
+    shutdown()
+  process.on 'SIGTERM', ->
+    console.log "#{process.pid} SIGTERM"
+    shutdown()

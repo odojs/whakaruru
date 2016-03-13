@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/metocean/whakaruru/issues"
   },
-  "homepage": "https://github.com/metocean/whakaruru#readme"
+  "homepage": "https://github.com/metocean/whakaruru#readme",
+  "devDependencies": {
+    "http-mutunga": "1.0.0"
+  }
 }
